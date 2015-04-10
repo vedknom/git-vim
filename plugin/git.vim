@@ -101,7 +101,7 @@ function! GitDiff(args)
     endif
 
     call <SID>OpenGitBuffer(git_output)
-    setlocal filetype=git-diff
+    setlocal filetype=git-diff.diff
 endfunction
 
 " Show Status.
