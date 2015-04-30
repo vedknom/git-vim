@@ -193,17 +193,15 @@ function! GitCatFile(file)
 endfunction
 
 " Show revision and author for each line.
-function! GitBlame(...)
-    let git_output = s:SystemGit('blame -- ' . expand('%'))
+function! GitBlame(args)
+    let git_output = s:SystemGit('blame ' . a:args . ' -- ' . shellescape(expand('%')))
     if !strlen(git_output)
         echo "No output from git command"
         return
     endif
 
     let l:git_blame_width = 20
-    if strlen(a:1)
-        let l:git_blame_width = a:1
-    elseif exists('g:git_blame_width') && g:git_blame_width
+    if exists('g:git_blame_width') && g:git_blame_width
         let l:git_blame_width = g:git_blame_width
     endif
 
@@ -213,10 +211,12 @@ function! GitBlame(...)
     let git_command_edit_save = g:git_command_edit
     let g:git_command_edit = 'leftabove vnew'
     call <SID>OpenGitBuffer(git_output)
+    setlocal filetype=git-blame
+
     let g:git_command_edit = git_command_edit_save
 
     setlocal modifiable
-    silent %s/\d\d\d\d\zs \+\d\+).*//
+    silent %s/\d\d\d\d\zs\s\+\d\+).*//
     exe 'vertical resize ' . git_blame_width
     setlocal nomodifiable
     setlocal nowrap scrollbind
